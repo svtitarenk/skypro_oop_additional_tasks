@@ -1,4 +1,5 @@
 from oop_main.src.task import Task
+from oop_main.src.exceptions import ZeroRunTimeTask
 
 
 class User:
@@ -35,8 +36,17 @@ class User:
     @task_list.setter
     def task_list(self, task: Task):
         if isinstance(task, Task):  # если мы будем указывать и наследников, то проверка будет выполняться корректно
-            self.__task_list.append(task)
-            User.all_tasks_count += 1
+            try:
+                if task.run_time == 0:
+                    raise ZeroRunTimeTask("Нельзя задать задачу с нулевым временем выполнения")
+            except ZeroRunTimeTask as e:
+                print(str(e))
+            else:
+                self.__task_list.append(task)
+                User.all_tasks_count += 1
+                print("Задача добавлено успешно")
+            finally:
+                print("Обработка добавления задачи завершена")
         else:
             raise TypeError
 
@@ -44,10 +54,15 @@ class User:
     def task_in_list(self):
         return self.__task_list
 
+    def middle_task_runtime(self):
+        try:
+            return sum([task.run_time for task in self.__task_list]) / len(self.__task_list)
+        except ZeroDivisionError:
+            return 0
 
 if __name__ == "__main__":
-    task1 = Task("Купить огурцы", "Купить огурцы для салата")
-    task2 = Task("Купить подмидоры", "Купить помидоры для салата")
+    task1 = Task("Купить огурцы", "Купить огурцы для салата", run_time=20)
+    task2 = Task("Купить подмидоры", "Купить помидоры для салата", run_time=20)
     task3 = Task("Купить лук", "Купить лук для салата")
     task4 = Task("Купить перец", "Купить перец для салата")
 
@@ -68,3 +83,10 @@ if __name__ == "__main__":
     print('user.task_list:', user.task_list, sep='\n')
     print('User.all_tasks_count:', User.all_tasks_count)
 
+    print('middle_task_runtime', user.middle_task_runtime())
+
+    user1 = User('User', 'user@email.com', 'User', 'Userov',[])
+    print(user1.middle_task_runtime())
+
+    task5 = Task("Купить огурцы", "Купить огурцы для салата", run_time=50)
+    user.task_list = task5

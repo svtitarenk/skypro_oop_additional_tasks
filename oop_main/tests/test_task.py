@@ -26,4 +26,4 @@ def test_task_update(capsys, task):
     assert message.out.strip().split("\n")[-1] == "Нельзя изменить дату создания на дату из прошлого"
 
     task.created_at = datetime.datetime.now().date().strftime('%d.%m.%Y')
-    assert task.created_at == '28.05.2024'
+    assert task.created_at == datetime.datetime.now().date().strftime('%d.%m.%Y')
